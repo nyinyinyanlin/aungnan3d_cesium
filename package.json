@@ -1,0 +1,27 @@
+{
+  "name": "aung_nan_3d",
+  "version": "1.0.0",
+  "description": "3D visualization dashboard of Aung Nan heritage zone with Cesium.js",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Cesium",
+    "3D",
+    "GIS",
+    "Archaeology",
+    "Heritage",
+    "Web"
+  ],
+  "author": "Nyi Nyi Nyan Lin",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "pg": "^8.11.3",
+    "pug": "^3.0.2"
+  }
+}
