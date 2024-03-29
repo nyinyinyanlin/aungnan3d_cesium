@@ -188,12 +188,12 @@
         baseLayerPicker: false,
         requestRenderMode: true,
         maximumRenderTimeChange: Infinity,
-        // scene3DOnly : true,
-        // terrain: Cesium.Terrain.fromWorldTerrain(),
     });
     const scene = viewer.scene;
     viewer.scene.debugShowFramesPerSecond = true;
-    scene.globe.depthTestAgainstTerrain = true;
+    viewer.scene.globe.maximumScreenSpaceError = 20;
+    viewer.scene.globe.tileCacheSize = 2000;
+    scene.globe.depthTestAgainstTerrain = false;
     
     const toolbar = document.querySelector("div.cesium-viewer-toolbar");
     const modeButton = document.querySelector("span.cesium-sceneModePicker-wrapper");
@@ -394,7 +394,7 @@
     });
 
     handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-    handler.setInputAction(debounce(function (movement) {
+    handler.setInputAction(function (movement) {
         let pickedObject = scene.pick(movement.endPosition);
         if (Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id)){
             if (pickedObject.id.type !== "watershed" && pickedObject.id.type !== "stream" && pickedObject.id.type !== "photosphere") {
@@ -407,6 +407,7 @@
                 pickedObject.id.polygon.outlineColor = pickedObject.id.hoverColor
                 pickedObject.id.polygon.extrudedHeight = pickedObject.id.hoverHeight
                 lastPickedObject = pickedObject
+                scene.requestRender();
             }
         } else {
             if (Cesium.defined(lastPickedObject)) {
@@ -414,9 +415,10 @@
                 lastPickedObject.id.polygon.outlineColor = lastPickedObject.id.defaultColor
                 lastPickedObject.id.polygon.extrudedHeight = lastPickedObject.id.defaultHeight
                 lastPickedObject = undefined
+                scene.requestRender();
             }
         }
-    }, 50), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
     function showData(collection,target) {
         if (target[0] == "none") {
