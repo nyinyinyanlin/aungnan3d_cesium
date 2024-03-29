@@ -186,10 +186,13 @@
         geocoder: false,
         sceneModePicker: false,
         baseLayerPicker: false,
+        requestRenderMode: true,
+        maximumRenderTimeChange: Infinity,
         // scene3DOnly : true,
         // terrain: Cesium.Terrain.fromWorldTerrain(),
     });
     const scene = viewer.scene;
+    viewer.scene.debugShowFramesPerSecond = true;
     scene.globe.depthTestAgainstTerrain = true;
     
     const toolbar = document.querySelector("div.cesium-viewer-toolbar");
