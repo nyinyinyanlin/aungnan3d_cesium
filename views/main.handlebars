@@ -201,8 +201,8 @@
         {value: "buildings", text: "Buildings"},
         {value: "hydrology", text: "Hydrology"},
         {value: "photospheres", text: "Photo Spheres"},
-        {value: "zones", text: "Zones"},
-        {value: "pois", text: "Places of Interest"},
+        //{value: "zones", text: "Zones"},
+        //{value: "pois", text: "Places of Interest"},
     ]
     for (let i = 0; i < displayData.length; i++) {
         var option = document.createElement("option")
@@ -257,7 +257,6 @@
             viewer.dataSources.add(dataSource);
             dataSource.entities.values.forEach((entity) => {
                 entity.type = "watershed"
-                entity.description = "<h1>This is HEADING</h1>"
                 entity.polygon.material = Cesium.Color.fromRandom({
                     alpha: 0.5
                 })
@@ -279,7 +278,7 @@
                 type: "photosphere",
                 src: "/images/panos/" + feature.properties.Name,
                 name: feature.properties.Name,
-                position: Cesium.Cartesian3.fromDegrees(feature.properties.Lon, feature.properties.Lat, feature.properties.Altitude - 15),
+                position: Cesium.Cartesian3.fromDegrees(feature.properties.Lon, feature.properties.Lat, feature.properties.Altitude - 73),
                 ellipsoid: {
                     radii: new Cesium.Cartesian3(2.5, 2.5, 2.5),
                     material: new Cesium.ImageMaterialProperty({
@@ -332,7 +331,7 @@
                  entity.defaultColor = Cesium.Color.PURPLE.withAlpha(0.08)
                  entity.hoverColor = Cesium.Color.BLUE.withAlpha(0.1)
                  entity.clickColor = Cesium.Color.GREEN.withAlpha(0.1)
-                 entity.defaultHeight = (entity.properties.dsm_height - 85)/2
+                 entity.defaultHeight = (entity.properties.dsm_height - 85)/1.5
                  entity.hoverHeight = entity.properties.dsm_height - 85
                  entity.polygon.outlineColor = entity.defaultColor
                  entity.polygon.material = entity.defaultColor
