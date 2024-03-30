@@ -135,14 +135,62 @@
             infobox += `</br><div class="imagecontainer"><img class="monumentimage" src="/images/monuments/${info.image}"/></div>`
         }
         return infobox
-        /*return `
-        <p>Plate ID: ${info.plate_id}</p>
-        <p>Name: ${info.monument_name}</p>
-        <p>Type: ${info.monument_type}</p>
-        <p>Era: ${info.era}</p>
-        <p>Donor: ${info.donor}</p>
-        <p>Description: ${info.description}</p>
-        `*/
+    }
+        function compilePOIInfo(info) {
+        let infobox = `
+        <style>
+            .poiinfotable tbody tr td {
+                font-size: small;
+                padding: 0px 5px 0px 5px;
+            }
+            .poiinfotable tbody tr td:nth-child(odd) {
+                text-align: end;
+                font-weight: bold;
+            }
+            .poiinfotable tbody tr td:nth-child(even) {
+                font-style: italic;
+            }
+            .description-text {
+                font-style: italic;
+                text-align: justify;
+            }
+            .poiimage {
+                width: 80%;
+                height: auto;
+            }
+            .imagecontainer {
+                width: 100%;
+                height: fit-content;
+                text-align: center;
+            }
+        </style>`;
+        if (info.poi_id != "null") {
+            infobox += `
+            <h2>${info.poi_id}</h2>
+            `
+        }
+        infobox += "<hr>"
+        infobox += "<table class='poiinfotable'>"
+        if (info.poi_id != "null") {
+            infobox += `            
+            <tr>
+                <td>POI ID: </td><td>${info.poi_id}</td>
+            </tr>`
+        }
+        if (info.plate_id != "null") {
+            infobox += `            
+            <tr>
+                <td>Plate ID: </td><td>${info.plate_id}</td>
+            </tr>`
+        }
+        infobox += "</table>"
+        if (info.description != "null") {
+            infobox += `<hr><h3>Description</h3><p class="description-text">${info.description}</p>`
+        }
+        if (info.image != "null") {
+            infobox += `</br><div class="imagecontainer"><img class="poiimage" src="/images/pois/${info.image}"/></div>`
+        }
+        return infobox
     }
 </script>
 <script>
@@ -193,7 +241,7 @@
     viewer.scene.debugShowFramesPerSecond = true;
     viewer.scene.globe.maximumScreenSpaceError = 20;
     viewer.scene.globe.tileCacheSize = 2000;
-    scene.globe.depthTestAgainstTerrain = false;
+    scene.globe.depthTestAgainstTerrain = true;
     
     const toolbar = document.querySelector("div.cesium-viewer-toolbar");
     const modeButton = document.querySelector("span.cesium-sceneModePicker-wrapper");
@@ -204,8 +252,7 @@
         {value: "buildings", text: "Buildings"},
         {value: "hydrology", text: "Hydrology"},
         {value: "photospheres", text: "Photo Spheres"},
-        //{value: "zones", text: "Zones"},
-        //{value: "pois", text: "Places of Interest"},
+        {value: "pois", text: "Places of Interest"},
     ]
     for (let i = 0; i < displayData.length; i++) {
         var option = document.createElement("option")
@@ -227,12 +274,6 @@
     if (!scene.pickPositionSupported) {
         window.alert("This browser does not support pickPosition.");
     }
-
-    // viewer.scene.setTerrain(
-    //     new Cesium.Terrain(
-    //         Cesium.CesiumTerrainProvider.fromIonAssetId(2479123),
-    //     ),
-    // );
 
     // Fly the camera to San Francisco at the given longitude, latitude, and height.
     viewer.camera.flyTo({
@@ -310,8 +351,9 @@
     } catch (error) {
         console.log(`Failed to load datasource: ${error}`);        
     }
+
     Cesium.GeoJsonDataSource.clampToGround = false;
-    Cesium.GeoJsonDataSource.load("/geojson").then((dataSource) => {
+    Cesium.GeoJsonDataSource.load("/geojson/buildings").then((dataSource) => {
         
         viewer.dataSources.add(dataSource);
          var buildings = dataSource.entities;
@@ -348,6 +390,35 @@
 
         dataSource.entities.show = false
         collections.buildings = dataSource.entities
+     });
+
+    const billboards = scene.primitives.add(new Cesium.BillboardCollection());
+    Cesium.GeoJsonDataSource.load("/geojson/poi").then((dataSource) => {
+         viewer.dataSources.add(dataSource);
+         var pois = dataSource.entities;
+    
+         var poisEntities = dataSource.entities.values;
+         for (var i = 0; i < poisEntities.length;i++) {
+             var entity = poisEntities[i];
+             if(Cesium.defined(entity)) {
+                entity.point = undefined;
+                entity.billboard.image = "/images/graphics/poi_billboard.png"
+                entity.billboard.scale = 0.1
+                entity.billboard.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND
+                entity.billboard.scaleByDistance = new Cesium.NearFarScalar(1.5e2, 2.0, 1.5e7, 0.5)
+                entity.name = "POI: " + entity.properties.poi_id.toString().replace("_"," ")
+                entity.type = "place_of_interest"
+                entity.description = compilePOIInfo({
+                   plate_id: entity.properties.plate_id.toString().replace("_"," "),
+                   poi_id: entity.properties.poi_id.toString().replace("_"," "),
+                   description: entity.properties.description.toString(),
+                   image: entity.properties.image.toString()
+                })
+             };
+         }
+
+        dataSource.entities.show = false
+        collections.pois = dataSource.entities
      });
 
     const debounce = (callback, wait) => {
@@ -397,7 +468,7 @@
     handler.setInputAction(function (movement) {
         let pickedObject = scene.pick(movement.endPosition);
         if (Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id)){
-            if (pickedObject.id.type !== "watershed" && pickedObject.id.type !== "stream" && pickedObject.id.type !== "photosphere") {
+            if (pickedObject.id.type === "building") {
                 if (Cesium.defined(lastPickedObject) && pickedObject.id !== lastPickedObject.id) {
                     lastPickedObject.id.polygon.material = lastPickedObject.id.defaultColor
                     lastPickedObject.id.polygon.outlineColor = lastPickedObject.id.defaultColor
