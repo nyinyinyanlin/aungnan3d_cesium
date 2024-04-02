@@ -27,30 +27,31 @@ app.get('/', (req, res) => {
     res.render('main', {layout : 'index'});
 })
 
-app.get('/geojson/buildings', async (req, res) => {
-    const result = await pool.query("SELECT json_build_object('type','Feature','id',id,'geometry',ST_AsGeoJSON(geom)::json,'properties',json_build_object('plate_id', plate_id,'type', type, 'monument_name', monument_name, 'era', era, 'description', description, 'donor', donor, 'image', image, 'dsm_height', dsm_height, 'delta_height', delta_height)) FROM \"public\".\"primary_buildings_final\";") // LIMIT 10
+app.get('/geojson/:type', async (req, res) => {
+    let type = req.params['type']
     let geojson = {
         type: "FeatureCollection",
         features: []
-    } 
-    result.rows.forEach((row,i) => {
-        geojson.features.push(row.json_build_object)
-    })
-    res.json(geojson)
-})
-
-app.get('/geojson/poi', async (req, res) => {
-    const result = await pool.query("SELECT json_build_object('type','Feature','id',id,'geometry',ST_AsGeoJSON(geom)::json,'properties',json_build_object('plate_id', plate_id, 'poi_id', poi_id, 'description', description, 'image', photo, 'dsm_height', dsm_height)) FROM \"public\".\"poi_final\";") // LIMIT 10
-    let geojson = {
-        type: "FeatureCollection",
-        features: []
-    } 
-    result.rows.forEach((row,i) => {
-        geojson.features.push(row.json_build_object)
-    })
-    res.json(geojson)
+    }
+    try {
+        let result;
+        if (type === "buildings") {
+            result = await pool.query("SELECT json_build_object('type','Feature','id',id,'geometry',ST_AsGeoJSON(geom)::json,'properties',json_build_object('plate_id', plate_id,'type', type, 'monument_name', monument_name, 'era', era, 'description', description, 'donor', donor, 'image', image, 'dsm_height', dsm_height, 'delta_height', delta_height)) FROM \"public\".\"primary_buildings_final\";")
+        } else if (type === "poi") {
+            result = await pool.query("SELECT json_build_object('type','Feature','id',id,'geometry',ST_AsGeoJSON(geom)::json,'properties',json_build_object('plate_id', plate_id, 'poi_id', poi_id, 'description', description, 'image', photo, 'dsm_height', dsm_height)) FROM \"public\".\"poi_final\";")
+        } 
+        if (result) {
+            result.rows.forEach((row,i) => {
+                geojson.features.push(row.json_build_object)
+            })
+        }
+    } catch (error) {
+        console.error(error);
+    } finally {
+        res.json(geojson)
+    }
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Server listening on port ${port}`)
 })
