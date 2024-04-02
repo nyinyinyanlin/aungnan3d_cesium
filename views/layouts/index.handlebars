@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mobile-detect@1.4.5/mobile-detect.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
       :root {
         --mainColor: #ff9800;
@@ -30,9 +31,9 @@
         padding: 0;
       }
 
-      * {
-        font-family: "Courier New", Courier, monospace, 'Padauk'!important;
-      }
+      /** {
+      //   font-family: "Courier New", Courier, monospace, 'Padauk'!important;
+       }*/
 
       #sceneContainer {
         height: 94%!important;
@@ -176,6 +177,18 @@
 
       .cesium-infoBox {
         height: fit-content!important;
+      }
+
+      .member-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content:space-evenly;
+      }
+
+      .member {
+        margin: 15px 20px 15px 20px;
+        padding: 10px;
       }
     </style>
   </head>
