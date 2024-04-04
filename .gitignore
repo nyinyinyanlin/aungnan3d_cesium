@@ -1,6 +1,7 @@
 node_modules
 package-lock.json
-#public/images/monuments/*.jpg
-#public/images/panos/*.jpg
-#public/images/pois/*.jpg
+public/images/monuments/*.jpg
+public/images/panos/*.jpg
+public/images/pois/*.jpg
+public/images/team/*.jpg
 .env
