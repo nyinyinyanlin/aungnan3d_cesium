@@ -35,7 +35,7 @@
     transition: 1s;
   }
 
-  #infobox, #creditbox, #welcomebox {
+  .overlaybox {
     height: 94%!important;
     width: 100%;
     position: absolute;
@@ -135,7 +135,7 @@
       padding: 5% 10% 5% 10%;
   }
 
-  #infoclose, #creditclose, #welcomeclose {
+  .closebtn {
     display: block;
     position: fixed;
     font-size: large;
@@ -144,6 +144,7 @@
     width: fit-content;
     padding: 10px;
     margin-right: 10px;
+    cursor: pointer;
   }
 
   a {
@@ -169,9 +170,59 @@
   .member {
     margin: 15px 20px 15px 20px;
     padding: 10px;
+    text-align: center;
+  }
+
+  .member-name {
+    margin: 5px 0px 5px 0px;
+  }
+
+  .member-position {
+    margin: 5px 0px 5px 0px;
+    font-size: smaller;
+  }
+
+  .member-affiliation {
+    margin: 5px 0px 5px 0px;
+    font-size: smaller;
+    font-style: italic;
   }
 
   .member-profile {
     width: 100px;
     height: 100px;
+  }
+
+  #welcomearea {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pg-container {
+    background-color: brown;
+    height: 95%;
+    width: 90%;
+  }
+
+  .pg-content {
+    background-color: #ff9800;
+    height: 90%;
+  }
+
+  .pg-ctrl {
+    height: 10%;
+  }
+
+  .pg-child {
+    position: absolute;
+    display: block;
+    height: 100%;
+    visibility: hidden;
+  }
+
+  .pg-child .active {
+    visibility: visible;
   }
